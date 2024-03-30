@@ -79,7 +79,7 @@ public class mlb {
                 }
                 Element awayLast10 = new Element("table");
                 Element homeLast10 = new Element("table");
-                if (last10.size() > 2) {
+                if (last10.size() > 3) {
                     awayLast10 = last10.get(1);
                     homeLast10 = last10.get(3);
                 }
@@ -105,11 +105,12 @@ public class mlb {
                                 awayLast10GameScore = awayLast10score.substring(2, awayLast10score.length()).split(" - ");
                             String homeLast10score = homeLast10tr.get(j).select("td").get(2).text().replace(" (OT)","");
                                 homeLast10GameScore = homeLast10score.substring(2, homeLast10score.length()).split(" - ");
-
-                                awaylast10 += Integer.parseInt(awayLast10GameScore[0]);
-                                awaylast10opp += Integer.parseInt(awayLast10GameScore[1]);
-                                homelast10 += Integer.parseInt(homeLast10GameScore[0]);
-                                homelast10opp += Integer.parseInt(homeLast10GameScore[1]);
+                                
+                                awaylast10 += Integer.parseInt(awayLast10GameScore[0].replaceAll("- ", ""));
+                                awaylast10opp += Integer.parseInt(awayLast10GameScore[1].replaceAll("- ", ""));
+                                homelast10 += Integer.parseInt(homeLast10GameScore[0].replaceAll("- ", ""));
+                                homelast10opp += Integer.parseInt(homeLast10GameScore[1].replaceAll("- ", ""));
+                                
                         }
                     }
                 }

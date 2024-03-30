@@ -11,9 +11,10 @@ import org.jsoup.select.Elements;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-public class mgm {
+public class mgmmlb {
     public static ArrayList<String[]> getOdds() throws Exception {
-        String url = "https://sports.oh.betmgm.com/en/sports/football-11/betting/usa-9/nfl-35";
+        // String url = "https://sports.oh.betmgm.com/en/sports/football-11/betting/usa-9/nfl-35";
+        String url = "https://sports.oh.betmgm.com/en/sports/baseball-23/betting/usa-9/mlb-75";
         System.setProperty("webdriver.chrome.driver","C:\\Users\\daryl\\work\\chromedriver-win64\\chromedriver.exe");
         WebDriver driver = new ChromeDriver();
         driver.manage().window().maximize();
@@ -58,10 +59,10 @@ public class mgm {
                 
                 String name = participants.get(0).text();
                 String.format("%15s", name);
-                // System.out.printf("%-15s%-15s%-15s%-15s\n",name,
-                //     optionGroups.get(0).select("ms-option").get(0).text(),
-                //     optionGroups.get(1).select("ms-option").get(0).text(),
-                //     optionGroups.get(2).select("ms-option").get(0).text());
+                System.out.printf("%-15s%-15s%-15s%-15s\n",name,
+                    optionGroups.get(0).select("ms-option").get(0).text(),
+                    optionGroups.get(1).select("ms-option").get(0).text(),
+                    optionGroups.get(2).select("ms-option").get(0).text());
                 // System.out.println(name + "\t" + 
                 //     optionGroups.get(0).select("ms-option").get(0).text() + "\t" + 
                 //     optionGroups.get(1).select("ms-option").get(0).text() + "\t" + 
@@ -72,10 +73,21 @@ public class mgm {
                 //     optionGroups.get(0).select("ms-option").get(1).text() + "\t" + 
                 //     optionGroups.get(1).select("ms-option").get(1).text() + "\t" + 
                 //     optionGroups.get(2).select("ms-option").get(1).text());
-                // System.out.printf("%-15s%-15s%-15s%-15s\n",name,
-                //     optionGroups.get(0).select("ms-option").get(1).text(),
-                //     optionGroups.get(1).select("ms-option").get(1).text(),
-                //     optionGroups.get(2).select("ms-option").get(1).text());
+                System.out.printf("%-15s%-15s%-15s%-15s\n",name,
+                    optionGroups.get(0).select("ms-option").get(1).text(),
+                    optionGroups.get(1).select("ms-option").get(1).text(),
+                    optionGroups.get(2).select("ms-option").get(1).text());
+                Elements href = event.getElementsByAttributeValueContaining("href","events");
+                String gamehref = "https://sports.oh.betmgm.com"+href.attr("href");
+                System.out.println(gamehref);
+                driver.get(gamehref);
+                String gamehtml = driver.getPageSource();
+                Document gamedoc = Jsoup.parse(gamehtml);
+                // Document gamedoc = Jsoup.connect(]gamehref).get();
+                Elements headers = gamedoc.getElementsByClass("option-panel ng-star-inserted");
+                System.out.println(headers.text());
+                Thread.sleep(4000);
+                
             }
         }
         Thread.sleep(9000);

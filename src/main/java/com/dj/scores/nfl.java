@@ -9,10 +9,11 @@ import java.util.*;
 
 public class nfl {
     public static void getNfl(String team1, String team2, String week) {
+		DecimalFormat df = new DecimalFormat("0.00");
 		try
 		{
             int weekInt = Integer.parseInt(week);
-			String url = "https://www.pro-football-reference.com/years/2022/games.htm";
+			String url = "https://www.pro-football-reference.com/years/2023/games.htm";
 			Document doc = Jsoup.connect(url).get();
 			Element table = doc.select("table").get(0);
 			Elements rows = table.select("tr");
@@ -89,6 +90,8 @@ public class nfl {
 			Double team1oppGaveup = 0D;
 			// System.out.println("**********");
 			// System.out.println("**********"+team1+"**********");
+			
+			System.out.printf("%-30s%-15s%-15s\n",team1,"average","gave up");
 			int i=0;
 			for(String key : allOpponents.keySet()) {
 				i++;
@@ -110,7 +113,8 @@ public class nfl {
 						// team1oppGaveup += Util.getOpponentAveragePoints(allOpponents, teams, opponent);
 						team1oppGaveup += Util.getOpponentAveragePoints(opponent,games);
 						// System.out.println(Util.getOpponentAveragePoints(allOpponents, teams, opponent));
-						// System.out.println(j + " " + opponent + " \t average " + "\t" + opponentPoints + " \t gave up \t"+Util.getOpponentAveragePoints(opponent,games));
+						System.out.printf("%-30s%-15s%-15s\n",j + " " + opponent,df.format(opponentPoints),df.format(Util.getOpponentAveragePoints(opponent,games)));
+						// System.out.println(j + " " + df.format(opponent) + " \t average " + "\t" + df.format(opponentPoints) + " \t gave up \t"+Util.getOpponentAveragePoints(opponent,games));
 						// System.out.println(Util.getOpponentAveragePoints(allOpponents, teams, opponent));
 					}
 					team1oppAvg = team1oppAvg/j;
@@ -124,8 +128,8 @@ public class nfl {
 			Double team2gaveup = 0D;
 			Double team2oppAvg = 0D;
 			Double team2oppGaveup = 0D;
-			// System.out.println();
-			// System.out.println("**********"+team2+"**********");
+			System.out.println();
+			System.out.printf("%-30s%-15s%-15s\n",team2,"average","gave up");
 			i=0;
 			for(String key : allOpponents.keySet()) {
 				i++;
@@ -146,7 +150,8 @@ public class nfl {
 						team2oppGaveup += Util.getOpponentAveragePoints(opponent,games);
 						// team2oppGaveup += Util.getOpponentAveragePoints(allOpponents, teams, opponent);
 						// System.out.println(Util.getOpponentAveragePoints(opponent,games));
-						// System.out.println(j + " " + opponent + " \t average " + "\t" + opponentPoints + " \t gave up \t"+Util.getOpponentAveragePoints(opponent,games));
+						System.out.printf("%-30s%-15s%-15s\n",j + " " + opponent,df.format(opponentPoints),df.format(Util.getOpponentAveragePoints(opponent,games)));
+						// System.out.println(j + " " + df.format(opponent) + " \t average " + "\t" + df.format(opponentPoints) + " \t gave up \t"+Util.getOpponentAveragePoints(opponent,games));
 						// System.out.println(opponentPoints);
 					}
 					team2oppAvg = team2oppAvg/j;
@@ -186,12 +191,12 @@ public class nfl {
 			// System.out.println();
 
 			//assuming team1 is away and team2 is home
-			DecimalFormat df = new DecimalFormat("0.00");
+			
 			Double team1PredictedPoints =  (team1baseOffensive * team1performance) - 1.5;
-			System.out.printf("%-20s%-20s\n",team1,df.format(team1PredictedPoints));
+			System.out.printf("%-25s%-20s\n",team1,df.format(team1PredictedPoints));
 			// System.out.println(team1 + " predicted points " + team1PredictedPoints);
 			Double team2PredictedPoints = (team2baseOffensive * team2performance) + 1.5;
-			System.out.printf("%-20s%-20s\n",team2,df.format(team2PredictedPoints));
+			System.out.printf("%-25s%-20s\n",team2,df.format(team2PredictedPoints));
 			// System.out.println(team2 + " predicted points " + df.format(team2PredictedPoints));
 		}
 		catch (Exception e)

@@ -19,7 +19,9 @@ public class nba {
     static HashMap<String,Double> homeTeamProbabilities = new HashMap<String,Double>();
 
     public static void getnba() {
-        String url = "https://www.covers.com/sports/nba/matchups?selectedDate=2023-06-09";
+        // String url = "https://www.covers.com/sports/nfl/matchups";
+        String url = "https://www.covers.com/sports/nba/matchups";
+        // String url = "https://www.covers.com/sports/ncaab/matchups";
         try {
             Document doc = Jsoup.connect(url).get();
             
@@ -27,83 +29,67 @@ public class nba {
             Elements matchupNames = doc.getElementsByClass("cmg_matchup_header_team_names");
 
             for (int i = 0; i < matchupNames.size(); i++) { 
-                String[] matchupName = matchupNames.get(i).text().split(" at ");
+                String[] matchupName;
+                if (matchupNames.get(i).text().contains(" vs "))
+                    matchupName = matchupNames.get(i).text().split(" vs ");
+                else
+                    matchupName = matchupNames.get(i).text().split(" at ");
                 if (matchupName[0].contains("L.A.")) matchupName[0] = matchupName[0].split(" ")[1];
                 if (matchupName[1].contains("L.A.")) matchupName[1] = matchupName[1].split(" ")[1];
+                matchupName[1] = matchupName[1].split(" NEUTRAL")[0];
                 matchupList.add(matchupName);
-                System.out.println(matchupNames.get(i).text());
+                // System.out.println(matchupNames.get(i).text());
             }
             for (int i = 0; i < matchups.size(); i++) { 
                 Element matchup = matchups.get(i);
                 String matchupHref = matchup.attr("href");
-                System.out.println(matchupHref);
                 String matchupurl = "https://www.covers.com"+matchupHref;
                 Document matchupdoc = Jsoup.connect(matchupurl).get();
                 
-                Elements last10 = matchupdoc.getElementsByClass("table covers-CoversMatchups-Table covers-CoversSticky-table have-2ndCol-sticky A-Look-Back-Table");
-                Element awayLast10;
-                Element homeLast10;
-                if (last10.size() > 2) {
-                    awayLast10 = last10.get(1);
-                    homeLast10 = last10.get(3);
-                }
-                else {
-                    awayLast10 = last10.get(0);
-                    homeLast10 = last10.get(1);
-                }
-                Elements awayLast10tr = awayLast10.select("tr");
-                Elements homeLast10tr = homeLast10.select("tr");
-                Double awaylast5 = 0D;
-                Double awaylast5opp = 0D;
-                Double homelast5 = 0D;
-                Double homelast5opp = 0D;
-                Double awaylast10 = 0D;
-                Double awaylast10opp = 0D;
-                Double homelast10 = 0D;
-                Double homelast10opp = 0D;
-                for (int j = 2; j < 12; j ++) {
-                    String awayLast10score = awayLast10tr.get(j).select("td").get(2).text().replace(" (OT)","");
-                    String[] awayLast10GameScore = awayLast10score.substring(2, awayLast10score.length()).split(" - ");
-                    String homeLast10score = homeLast10tr.get(j).select("td").get(2).text().replace(" (OT)","");
-                    String[] homeLast10GameScore = homeLast10score.substring(2, homeLast10score.length()).split(" - ");
-                    // System.out.println(j + " awayLast10score "+awayLast10score+"\thomeLast10score "+homeLast10score);
-                    if (j < 7) {
-                        awaylast5 += Integer.parseInt(awayLast10GameScore[0]);
-                        awaylast5opp += Integer.parseInt(awayLast10GameScore[1]);
-                        homelast5 += Integer.parseInt(homeLast10GameScore[0]);
-                        homelast5opp += Integer.parseInt(homeLast10GameScore[1]);
-                    }
-
-                    awaylast10 += Integer.parseInt(awayLast10GameScore[0]);
-                    awaylast10opp += Integer.parseInt(awayLast10GameScore[1]);
-                    homelast10 += Integer.parseInt(homeLast10GameScore[0]);
-                    homelast10opp += Integer.parseInt(homeLast10GameScore[1]);
-                }
-                Double awaylast5off = awaylast5 / 5;
-                Double awaylast5def = awaylast5opp / 5;
-                Double homelast5off = homelast5 / 5;
-                Double homelast5def = homelast5opp / 5;
-                Double awaylast10off = awaylast10 / 10;
-                Double awaylast10def = awaylast10opp / 10;
-                Double homelast10off = homelast10 / 10;
-                Double homelast10def = homelast10opp / 10;
-                System.out.println("last5avg - \t" + "away avg" + "\t"+"away def"+"\t"+"home avg"+"\t"+"home def");
-                System.out.println("last5avg - \t" + awaylast5off + "\t\t"+awaylast5def+"\t\t"+homelast5off+"\t\t"+homelast5def);
-                // System.out.println("last10avg - \t" + "awaylast10avg" + "\t"+"awaylast10oppavg"+"\t"+"homelast10avg"+"\t"+"homelast10oppavg");
-                System.out.println("last10avg - \t" + awaylast10off + "\t\t"+awaylast10def+"\t\t"+homelast10off+"\t\t"+homelast10def);
+                Elements pointsAwayTable = matchupdoc.getElementsByAttributeValueMatching("aria-labelledby", "points");
+                String pointsawayoff = pointsAwayTable.get(0).select("tr").get(1).select("td").get(0).text();
+                String pointsawaydef = pointsAwayTable.get(0).select("tr").get(1).select("td").get(4).text();
                 
-                Elements shadedRowTable = matchupdoc.getElementsByClass("table covers-CoversMatchups-Table covers-CoversMatchups-saTable covers-CoversSticky-table");
-                Elements seasonavg = shadedRowTable.get(0).select("tr").get(2).select("td");
+                // https://www.covers.com/sport/basketball/nba/matchup/290682/stats-analysis/true/overall
+                String matchuphomeurl = "https://www.covers.com"+matchupHref+"/stats-analysis/true/overall";
+                Document matchuphomedoc = Jsoup.connect(matchuphomeurl).get();
+                Elements pointsHomeTable =matchuphomedoc.getElementsByClass("stats-table football-stats-table");
+                String pointshomeoff = pointsHomeTable.get(2).select("tr").get(1).select("td").get(0).text();
+                String pointshomedef = pointsHomeTable.get(2).select("tr").get(1).select("td").get(4).text();
 
-                Double awayOff = Double.parseDouble(seasonavg.get(1).text());
-                Double homeDef = Double.parseDouble(seasonavg.get(5).text());
-                Double homeOff = Double.parseDouble(seasonavg.get(7).text());
-                Double awayDef = Double.parseDouble(seasonavg.get(11).text());
+                Element leagueAveragePoints = matchupdoc.getElementsByClass("average-table").get(2);
+                String averagePointsString = leagueAveragePoints.select("tr").get(1).select("td").get(0).text();
 
-                Double awayOffRating = Double.parseDouble(seasonavg.get(2).text().substring(0, seasonavg.get(2).text().length()-1))/100;
-                Double homeDefRating = Double.parseDouble(seasonavg.get(4).text().substring(0, seasonavg.get(4).text().length()-1))/100;
-                Double homeOffRating = Double.parseDouble(seasonavg.get(8).text().substring(0, seasonavg.get(8).text().length()-1))/100;
-                Double awayDefRating = Double.parseDouble(seasonavg.get(10).text().substring(0, seasonavg.get(10).text().length()-1))/100;
+                String matchupurlhomelast5 = "https://www.covers.com"+matchupHref+"/stats-analysis/true/last5";
+                Document matchupdochomelast5 = Jsoup.connect(matchupurlhomelast5).get();
+
+                String matchupurlawaylast5 = "https://www.covers.com"+matchupHref+"/stats-analysis/false/last5";
+                Document matchupdocawaylast5 = Jsoup.connect(matchupurlawaylast5).get();
+
+                Elements pointstableawaylast5 = matchupdocawaylast5.getElementsByClass("stats-table football-stats-table");
+                Elements pointstablehomelast5 = matchupdochomelast5.getElementsByClass("stats-table football-stats-table");
+                
+                String awayOffStrlast5 = pointstableawaylast5.get(2).select("tr").get(1).select("td").get(0).text();
+                String homeDefStrlast5 = pointstablehomelast5.get(2).select("tr").get(1).select("td").get(4).text();
+
+                String homeOffStrlast5 = pointstablehomelast5.get(2).select("tr").get(1).select("td").get(0).text();
+                String awayDefStrlast5 = pointstableawaylast5.get(2).select("tr").get(1).select("td").get(4).text();
+
+                Double awayOfflast5 = Double.parseDouble(awayOffStrlast5);
+                Double homeDeflast5 = Double.parseDouble(homeDefStrlast5);
+                Double homeOfflast5 = Double.parseDouble(homeOffStrlast5);
+                Double awayDeflast5 = Double.parseDouble(awayDefStrlast5);
+
+                Double awayOff = Double.parseDouble(pointsawayoff);
+                Double homeDef = Double.parseDouble(pointshomedef);
+                Double homeOff = Double.parseDouble(pointshomeoff);
+                Double awayDef = Double.parseDouble(pointsawaydef);
+                Double average = Double.parseDouble(averagePointsString);
+
+                Double awayOffRating = awayOff/average;
+                Double homeDefRating = homeDef/average;
+                Double homeOffRating = homeOff/average;
+                Double awayDefRating = awayDef/average;
 
                 Double awayPerfRating = (awayOffRating + homeDefRating)/2;
                 Double homePerfRating = (homeOffRating + awayDefRating)/2;
@@ -119,23 +105,23 @@ public class nba {
                 DecimalFormat df = new DecimalFormat("0.00");
                 System.out.println("awayProjected - \t" + df.format(awayProjected) + "\t homeProjected - \t" + df.format(homeProjected));
                 
-                Elements last5avg = shadedRowTable.get(0).select("tr").get(5).select("td");
-
-                Double awayOffRatingLast5 = Double.parseDouble(last5avg.get(2).text().substring(0, last5avg.get(2).text().length()-1))/100;
-                Double homeDefRatingLast5 = Double.parseDouble(last5avg.get(4).text().substring(0, last5avg.get(4).text().length()-1))/100;
-                Double homeOffRatingLast5 = Double.parseDouble(last5avg.get(8).text().substring(0, last5avg.get(8).text().length()-1))/100;
-                Double awayDefRatingLast5 = Double.parseDouble(last5avg.get(10).text().substring(0, last5avg.get(10).text().length()-1))/100;
+                Double awayOffRatingLast5 = awayOfflast5/average;
+                Double homeDefRatingLast5 = homeDeflast5/average;
+                Double homeOffRatingLast5 = homeOfflast5/average;
+                Double awayDefRatingLast5 = awayDeflast5/average;
 
                 Double awayPerfRatingLast5 = (awayOffRatingLast5 + homeDefRatingLast5)/2;
                 Double homePerfRatingLast5 = (homeOffRatingLast5 + awayDefRatingLast5)/2;
                 
-                Double awayBaseOffLast5 = (awaylast5off + homelast5def)/2;
-                Double homeBaseOffLast5 = (homelast5off + awaylast5def)/2;
+                Double awayBaseOffLast5 = (awayOfflast5 + homeDeflast5)/2;
+                Double homeBaseOffLast5 = (homeOfflast5 + awayDeflast5)/2;
 
                 Double awayLast5Projected = awayBaseOffLast5 * awayPerfRatingLast5;
                 Double homeLast5Projected = (homeBaseOffLast5 * homePerfRatingLast5) + 2.5;
 
                 System.out.println("awayLast5Projected - \t" + df.format(awayLast5Projected) + "\t homeLast5Projected - \t" + df.format(homeLast5Projected));
+                
+                System.out.println(matchupHref);
                 System.out.println();
                 // Thread.sleep(5000L);
             }
