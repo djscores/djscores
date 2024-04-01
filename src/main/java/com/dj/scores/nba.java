@@ -20,8 +20,8 @@ public class nba {
 
     public static void getnba() {
         // String url = "https://www.covers.com/sports/nfl/matchups";
-        String url = "https://www.covers.com/sports/nba/matchups";
-        // String url = "https://www.covers.com/sports/ncaab/matchups";
+        // String url = "https://www.covers.com/sports/nba/matchups";
+        String url = "https://www.covers.com/sports/ncaab/matchups";
         try {
             Document doc = Jsoup.connect(url).get();
             
