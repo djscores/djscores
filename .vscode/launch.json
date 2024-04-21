@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "quic",
+            "request": "launch",
+            "mainClass": "com.dj.quic",
+            "projectName": "points"
+        },
+        {
+            "type": "java",
             "name": "App",
             "request": "launch",
             "mainClass": "com.dj.scores.App",
