@@ -1,11 +1,11 @@
 def month_urls():
     urls = {
-        'https://www.basketball-reference.com/leagues/NBA_2024_games-october.html',
-        'https://www.basketball-reference.com/leagues/NBA_2024_games-november.html',
-        'https://www.basketball-reference.com/leagues/NBA_2024_games-december.html',
-        'https://www.basketball-reference.com/leagues/NBA_2024_games-january.html',
-        'https://www.basketball-reference.com/leagues/NBA_2024_games-february.html',
-        'https://www.basketball-reference.com/leagues/NBA_2024_games-march.html',
+        # 'https://www.basketball-reference.com/leagues/NBA_2024_games-october.html',
+        # 'https://www.basketball-reference.com/leagues/NBA_2024_games-november.html',
+        # 'https://www.basketball-reference.com/leagues/NBA_2024_games-december.html',
+        # 'https://www.basketball-reference.com/leagues/NBA_2024_games-january.html',
+        # 'https://www.basketball-reference.com/leagues/NBA_2024_games-february.html',
+        # 'https://www.basketball-reference.com/leagues/NBA_2024_games-march.html',
         'https://www.basketball-reference.com/leagues/NBA_2024_games-april.html'
         }
     return urls

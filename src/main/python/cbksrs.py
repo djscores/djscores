@@ -25,6 +25,7 @@ for i in range(1,nrows):
         # team_soup = BeautifulSoup(team_page.content, 'html.parser')
         team_schedule = pandas.read_html(team_url, header=0)[1]
         print(team_schedule.head())
+        print(len(team_schedule))
         print(team_schedule['Opponent'])
         d1_schedule = team_schedule['Opponent'].isin(cbk_ratings['School'])
         print(len(d1_schedule))

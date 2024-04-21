@@ -9,6 +9,13 @@
             "name": "App",
             "request": "launch",
             "mainClass": "com.dj.scores.App",
+            "projectName": "djscores"
+        },
+        {
+            "type": "java",
+            "name": "App",
+            "request": "launch",
+            "mainClass": "com.dj.scores.App",
             "projectName": "points"
         },
         {

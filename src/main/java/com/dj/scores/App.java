@@ -29,12 +29,12 @@ public class App
 		String week = "6";
 		// System.out.println("you entered "+6);
 		// nfl.getNfl(team1, team2, week);
-		nba.getnba();
+		// nba.getnba();
 		// nbaprops.getnba();
 		// nba.getsrs();
 		// nba.spread();
 		// nba.fteProbability();
-		// mlb.getmlb();
+		mlb.getmlb();
 		// mgmmlb.getOdds();
 
 		// mlb.getBaseballReferenceMatchups();
