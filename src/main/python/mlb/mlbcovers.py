@@ -10,8 +10,10 @@ import re
 url = 'https://www.covers.com/sports/mlb/matchups'
 page = requests.get(url)
 soup = soup(page.content, 'html.parser')
-pattern = re.compile("mlb-matchup-link")
-matchups = soup.find_all('a', {'data-linkcont': pattern})
+matchup_pattern = re.compile("mlb-matchup-link")
+pitcher_pattern = re.compile("cmg_l_col cmg_l_span_6 cmg_team_starting_pitcher")
+matchups = soup.find_all('a', {'data-linkcont': matchup_pattern})
+pitchers = soup.find_all('div', {'class': pitcher_pattern})
 print(len(matchups))
 data = {}
 
