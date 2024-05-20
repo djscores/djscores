@@ -15,7 +15,7 @@ public class mlb {
     static DecimalFormat df = new DecimalFormat("0.00");
     
     public static void getmlb() {
-        String url = "https://www.covers.com/sports/mlb/matchups";
+        String url = "https://www.covers.com/sports/mlb/matchups?selectedDate=2024-05-20";
         // String url = "https://www.covers.com/sports/mlb/matchups?selectedDate=2023-07-18";
         try {
             Document doc = Jsoup.connect(url).get();
