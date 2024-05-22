@@ -12,8 +12,19 @@ import re
 url = 'https://www.covers.com/sports/mlb/matchups'
 page = requests.get(url)
 soup = soup(page.content, 'html.parser')
-matchup_pattern = re.compile("mlb-matchup-link")
-matchups = soup.find_all('a', {'data-linkcont': matchup_pattern})
+# matchup_pattern = re.compile("mlb-matchup-link")
+# matchups = soup.find_all('a', {'data-linkcont': matchup_pattern})
+matchup_sections = soup.find_all('div',{'class': 'cmg_matchup_game_box cmg_game_data'})
+for matchup_section in matchup_sections:
+    probables = matchup_section.find('div',{'class': 'cmg_l_row'})
+    probable_a = probables.find_all('a')
+    for probable in probable_a:
+        probable_href = probable.attrs.get('href')
+        probable_page = pd.read_html(probable_href)
+        previous_avg = probable_page[5]
+        ip = previous_avg['IP'][len(previous_avg)-1]
+        # away_pitcher_ip = previous_avg['IP'][5]
+        print(probable_href)
 print('matchups - ')
 print(len(matchups))
 data = {}
@@ -31,7 +42,7 @@ for matchup in matchups:
     pitchers = soup.find_all('a', {'class':"anchor-with-border"})
     matchup = pd.read_html(matchup_url)
 
-    away_pitcher_last5 = matchup[11]    
+    away_pitcher_last5 = matchup[10]    
     print(away_pitcher_last5)
     away_pitcher_ip = away_pitcher_last5['IP'][5]
     away_pitcher_ip_str = str(away_pitcher_ip)
@@ -43,7 +54,7 @@ for matchup in matchups:
     away_pitcher_so = away_pitcher_last5['SO'][5]
     away_pitcher_hr = away_pitcher_last5['HR'][5]
     
-    home_pitcher_last5 = matchup[13]
+    home_pitcher_last5 = matchup[12]
     print(home_pitcher_last5)
     home_pitcher_ip = home_pitcher_last5['IP'][5]
     home_pitcher_ip_str = str(home_pitcher_ip)
