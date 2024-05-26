@@ -15,7 +15,7 @@ public class mlb {
     static DecimalFormat df = new DecimalFormat("0.00");
     
     public static void getmlb() {
-        String url = "https://www.covers.com/sports/mlb/matchups?selectedDate=2024-05-22";
+        String url = "https://www.covers.com/sports/mlb/matchups?selectedDate=2024-05-26";
         // String url = "https://www.covers.com/sports/mlb/matchups?selectedDate=2023-07-18";
         try {
             Document doc = Jsoup.connect(url).get();
@@ -238,7 +238,7 @@ public class mlb {
                                 double walks = Double.parseDouble(gametd.get(7).text());
                                 double runs = Double.parseDouble(gametd.get(9).text());
                                 double hr = Double.parseDouble(gametd.get(10).text());
-                                averages = "avg so "+so + " hits " + hits + " walks "+walks + " runs " +runs + " hr " + hr;
+                                averages = "so "+so + " hits " + hits + " walks "+walks + " runs " +runs + " hr " + hr;
                             }
                         }
                     }
