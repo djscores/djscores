@@ -1,7 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-import pandas as pd
+import pandas
 import numpy
 import json
 import requests
@@ -10,13 +10,18 @@ import time
 import re
 from mlbespn import todays_games
 
-url = 'https://www.covers.com/sports/mlb/matchups?selectedDate=2024-06-10'
+url = 'https://www.covers.com/sports/mlb/matchups?selectedDate=2024-06-13'
 page = requests.get(url)
 soup = soup(page.content, 'html.parser')
 # matchup_pattern = re.compile("mlb-matchup-link")
 # matchups = soup.find_all('a', {'data-linkcont': matchup_pattern})
 matchup_sections = soup.find_all('div',{'class': 'cmg_matchup_game_box cmg_game_data'})
 espn_games = todays_games()
+pitchers = []
+pitchersdf = pandas.DataFrame(columns=['away_name','away_last5_score','away_last5_outs','away_last5_so','away_last5_hits','away_last5_walks','away_last5_runs','away_last5_hr',
+                                       'home_name','home_last5_score','home_last5_outs','home_last5_so','home_last5_hits','home_last5_walks','home_last5_runs','home_last5_hr',
+                                       'away_last10_outs','away_last10_so','away_last10_hits','away_last10_walks','away_last10_runs','away_last10_hr',
+                                       'home_last10_outs','home_last10_so','home_last10_hits','home_last10_walks','home_last10_runs','home_last10_hr'])
 for matchup_section in matchup_sections:
     teams = matchup_section.find('div',{'class': 'cmg_matchup_header_team_names'})
     team_list = teams.text.split(" at ")

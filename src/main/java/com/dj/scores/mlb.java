@@ -16,7 +16,7 @@ public class mlb {
     
     public static void getmlb() {
         // String url = "https://www.covers.com/sports/mlb/matchups";
-        String url = "https://www.covers.com/sports/mlb/matchups?selectedDate=2024-06-10";
+        String url = "https://www.covers.com/sports/mlb/matchups?selectedDate=2024-06-13";
         try {
             Document doc = Jsoup.connect(url).get();
             
