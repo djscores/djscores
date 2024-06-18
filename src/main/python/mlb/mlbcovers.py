@@ -8,15 +8,15 @@ import requests
 from bs4 import BeautifulSoup as soup
 import time
 import re
-from mlbespn import todays_games
+# from mlbespn import todays_games
 
-url = 'https://www.covers.com/sports/mlb/matchups?selectedDate=2024-06-13'
+url = 'https://www.covers.com/sports/mlb/matchups?selectedDate=2024-06-17'
 page = requests.get(url)
 soup = soup(page.content, 'html.parser')
 # matchup_pattern = re.compile("mlb-matchup-link")
 # matchups = soup.find_all('a', {'data-linkcont': matchup_pattern})
 matchup_sections = soup.find_all('div',{'class': 'cmg_matchup_game_box cmg_game_data'})
-espn_games = todays_games()
+# espn_games = todays_games()
 pitchers = []
 pitchersdf = pandas.DataFrame(columns=['away_name','away_last5_score','away_last5_outs','away_last5_so','away_last5_hits','away_last5_walks','away_last5_runs','away_last5_hr',
                                        'home_name','home_last5_score','home_last5_outs','home_last5_so','home_last5_hits','home_last5_walks','home_last5_runs','home_last5_hr',
@@ -79,10 +79,11 @@ for matchup_section in matchup_sections:
             away_probable = str("{0:.1f}".format(gameScore))
             away_probable_stats =  probable_pitcher_lastavg + ' outs ' + str(probable_outs_float) + ' so ' + str(probable_pitcher_so) + ' hits ' +  str(probable_pitcher_hits) + ' walks ' + str(probable_pitcher_walks) + ' runs ' + str(probable_pitcher_runs) + ' hr ' + str(probable_pitcher_hr)
         else:
-            for game in espn_games:
-                if team_list[0] in game[0].lower():
-                    espn_pitcher_href = game[4]
-                    print(espn_pitcher_href)
+            print('TBD')
+            # for game in espn_games:
+            #     if team_list[0] in game[0].lower():
+            #         espn_pitcher_href = game[4]
+            #         print(espn_pitcher_href)
         if home_probable:
             home_probable_href = home_probable.attrs.get('href')
             home_probable_page = pd.read_html(home_probable_href)
