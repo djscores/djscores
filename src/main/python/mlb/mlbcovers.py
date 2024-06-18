@@ -10,7 +10,7 @@ import time
 import re
 # from mlbespn import todays_games
 
-url = 'https://www.covers.com/sports/mlb/matchups?selectedDate=2024-06-17'
+url = 'https://www.covers.com/sports/mlb/matchups?selectedDate=2024-06-18'
 page = requests.get(url)
 soup = soup(page.content, 'html.parser')
 # matchup_pattern = re.compile("mlb-matchup-link")
@@ -50,8 +50,11 @@ for matchup_section in matchup_sections:
     
         if away_probable:
             away_probable_href = away_probable.attrs.get('href')
+            
             try:
-                away_probable_page = pd.read_html(away_probable_href)
+                away_probable_page = pandas.read_html(away_probable_href)
+                away_probable_id = away_probable_href.split('/')[7]
+
             except:
                 print(away_probable_name)
             if len(away_probable_page) > 2:
@@ -64,20 +67,20 @@ for matchup_section in matchup_sections:
             probable_len = len(previous_avg)-1
             probable_ip = previous_avg['IP'][len(previous_avg)-1]
             probable_ip_str = str(probable_ip)
-            probable_outs = probable_ip_str.split(".")
+            away_probable_outs = probable_ip_str.split(".")
             try:
-                probable_outs_float = float(probable_outs[0])*3+int(probable_outs[1])
+                away_probable_outs_float = float(probable_outs[0])*3+int(probable_outs[1])
             except:
                 no_games = 'No games played so far this season'
-            probable_pitcher_hits = previous_avg['H'][probable_len]
-            probable_pitcher_walks = previous_avg['BB'][probable_len]
-            probable_pitcher_runs = previous_avg['R'][probable_len]
-            probable_pitcher_so = previous_avg['SO'][probable_len]
-            probable_pitcher_hr = previous_avg['HR'][probable_len]
-            probable_pitcher_lastavg = previous_avg['Date'][probable_len]
-            gameScore = 47.5 + probable_pitcher_so + (probable_outs_float*1.5) - (probable_pitcher_walks*2) - (probable_pitcher_hits*2) - (probable_pitcher_runs*3) - (probable_pitcher_hr * 4)
-            away_probable = str("{0:.1f}".format(gameScore))
-            away_probable_stats =  probable_pitcher_lastavg + ' outs ' + str(probable_outs_float) + ' so ' + str(probable_pitcher_so) + ' hits ' +  str(probable_pitcher_hits) + ' walks ' + str(probable_pitcher_walks) + ' runs ' + str(probable_pitcher_runs) + ' hr ' + str(probable_pitcher_hr)
+            away_probable_pitcher_hits = previous_avg['H'][probable_len]
+            away_probable_pitcher_walks = previous_avg['BB'][probable_len]
+            away_probable_pitcher_runs = previous_avg['R'][probable_len]
+            away_probable_pitcher_so = previous_avg['SO'][probable_len]
+            away_probable_pitcher_hr = previous_avg['HR'][probable_len]
+            away_probable_pitcher_lastavg = previous_avg['Date'][probable_len]
+            away_gameScore = 47.5 + away_probable_pitcher_so + (away_probable_outs_float*1.5) - (away_probable_pitcher_walks*2) - (away_probable_pitcher_hits*2) - (away_probable_pitcher_runs*3) - (away_probable_pitcher_hr * 4)
+            away_probable = str("{0:.1f}".format(away_gameScore))
+            away_probable_stats =  away_probable_pitcher_lastavg + ' outs ' + str(away_probable_outs_float) + ' so ' + str(away_probable_pitcher_so) + ' hits ' +  str(away_probable_pitcher_hits) + ' walks ' + str(away_probable_pitcher_walks) + ' runs ' + str(away_probable_pitcher_runs) + ' hr ' + str(away_probable_pitcher_hr)
         else:
             print('TBD')
             # for game in espn_games:
@@ -86,7 +89,7 @@ for matchup_section in matchup_sections:
             #         print(espn_pitcher_href)
         if home_probable:
             home_probable_href = home_probable.attrs.get('href')
-            home_probable_page = pd.read_html(home_probable_href)
+            home_probable_page = pandas.read_html(home_probable_href)
             
             if len(home_probable_page) > 2:
                 previous_avg = home_probable_page[0]
@@ -117,14 +120,40 @@ for matchup_section in matchup_sections:
         href = matchup[0].attrs.get('href')
     matchup_url = 'https://www.covers.com'+href
     print(matchup_url)
+    
+    headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36',
+    "Content-Type": "application/x-www-form-urlencoded"}
+ 
+    matchup_props_url = matchup_url + '/props'
+    matchup_id = matchup_url.split('/')[7]
+    # matchup_props_page = requests.get(matchup_props_url, headers=headers)
+    # matchup_props = soup(matchup_props_page.content, 'html.parser')
+    
+    # https://www.covers.com/sport/player-props/matchup/300239?propEvent=MLB_GAME_PLAYER_PITCHER_STRIKEOUTS&countryCode=US&stateProv=Ohio&isLeagueVersion=False
+    
+    pitcher_strikeouts_url = 'https://www.covers.com/sport/player-props/matchup/' + matchup_id + '?propEvent=MLB_GAME_PLAYER_PITCHER_STRIKEOUTS&countryCode=US&stateProv=Ohio&isLeagueVersion=False'
+    pitcher_strikeouts_page = requests.get(pitcher_strikeouts_url, headers=headers)
+    pitcher_strikeouts_page_text = '<html><head></head><body>' + pitcher_strikeouts_page.text + '</body></html>'
+    pitcher_strikeouts = soup(pitcher_strikeouts_page_text, 'html.parser')
+    # driver = webdriver.Chrome()
+    # driver.get(pitcher_strikeouts_url)
+    # time.sleep(5)
+    # html = driver.page_source
+    # pitcher_strikeouts = soup(html, 'html.parser')
+    # driver.quit()
+    # pitchers = pitcher_strikeouts.find_all('a', {'class':"player-link"})
+
+    # https://www.covers.com/sport/player-props/matchup/300239?propEvent=MLB_GAME_PLAYER_RBIS&countryCode=US&stateProv=Ohio&isLeagueVersion=Falsef
+
     # page = requests.get(url)
     # driver.get(matchup_url)
     time.sleep(5)
     # driver.execute_script("window.scrollTo(0, 1000);")
     
     # matchup_soup = soup(page.content, 'html.parser')    
-    pitchers = soup.find_all('a', {'class':"anchor-with-border"})
-    matchup = pd.read_html(matchup_url)
+    
+    matchup = pandas.read_html(matchup_url)
 
     away_table_index = 0
     away_pitcher_last5 = matchup[0]  
@@ -183,8 +212,8 @@ for matchup_section in matchup_sections:
             home_last5_text = str("{0:.1f}".format(home_last5_gameScore))
             print(home_last5_text + ' Last 5 Avg ' + ' outs ' + str(home_last5_outs_float) + ' so ' + str(home_last5_so) + ' hits ' +  str(home_last5_hits) + ' walks ' + str(home_last5_walks) + ' runs ' + str(home_last5_runs) + ' hr ' + str(home_last5_hr))
     print()                                                                                                                                        
-        
-    time.sleep(5)
+
+    time.sleep(2)
 
     pitching_url_last10 = 'https://www.covers.com/'+href+'/stats-analysis/pitching/last10'
     hitting_url_last10 = 'https://www.covers.com/'+href+'/stats-analysis/hitting/last10'
@@ -197,28 +226,32 @@ for matchup_section in matchup_sections:
     hitting_throwhand_url_overall = 'https://www.covers.com/'+href+'/stats-analysis/hittingvsstarterthrowhand/overall'
     baseball_reference = 'https://www.baseball-reference.com/leagues/MLB-standings.shtml'
     
-    # pitching_last10 = pd.read_html(pitching_url_last10)
+    pitching_last10 = pandas.read_html(pitching_url_last10)
+    away_relievers_last10 = pitching_last10[2]['Runs/9'][0]
+    home_relievers_last10 = pitching_last10[2]['Runs/9'][1]
+    time.sleep(2)
+    hitting_last10 = pandas.read_html(hitting_url_last10)
+    time.sleep(2)
+    hitting_throwhand_url_last10 = pandas.read_html(hitting_throwhand_url_last10)
+    time.sleep(2)
+    
+
+
+    # pitching_last5 = pandas.read_html(pitching_url_last10)
     # time.sleep(5)
-    # hitting_last10 = pd.read_html(hitting_url_last10)
+    # hitting_last5 = pandas.read_html(hitting_url_last10)
     # time.sleep(5)
-    # hitting_throwhand_url_last10 = pd.read_html(hitting_throwhand_url_last10)
+    # hitting_throwhand_url_last5 = pandas.read_html(hitting_throwhand_url_last10)
     # time.sleep(5)
 
-    # pitching_last5 = pd.read_html(pitching_url_last10)
+    # pitching_overall = pandas.read_html(pitching_url_last10)
     # time.sleep(5)
-    # hitting_last5 = pd.read_html(hitting_url_last10)
+    # hitting_overall = pandas.read_html(hitting_url_last10)
     # time.sleep(5)
-    # hitting_throwhand_url_last5 = pd.read_html(hitting_throwhand_url_last10)
-    # time.sleep(5)
-
-    # pitching_overall = pd.read_html(pitching_url_last10)
-    # time.sleep(5)
-    # hitting_overall = pd.read_html(hitting_url_last10)
-    # time.sleep(5)
-    # hitting_throwhand_url_overall = pd.read_html(hitting_throwhand_url_last10)
+    # hitting_throwhand_url_overall = pandas.read_html(hitting_throwhand_url_last10)
     # time.sleep(5)
 
-    # baseball_reference_page = pd.read_html(baseball_reference)
+    # baseball_reference_page = pandas.read_html(baseball_reference)
 
     # relievers_last10 = pitching_url_last10[2]
 
