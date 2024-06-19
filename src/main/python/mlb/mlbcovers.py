@@ -10,7 +10,7 @@ import time
 import re
 # from mlbespn import todays_games
 
-url = 'https://www.covers.com/sports/mlb/matchups?selectedDate=2024-06-18'
+url = 'https://www.covers.com/sports/mlb/matchups?selectedDate=2024-06-19'
 page = requests.get(url)
 soup = soup(page.content, 'html.parser')
 # matchup_pattern = re.compile("mlb-matchup-link")
@@ -99,7 +99,10 @@ for matchup_section in matchup_sections:
             probable_ip = previous_avg['IP'][len(previous_avg)-1]
             probable_ip_str = str(probable_ip)
             probable_outs = probable_ip_str.split(".")
-            probable_outs_float = float(probable_outs[0])*3+int(probable_outs[1])
+            try:
+                probable_outs_float = float(probable_outs[0])*3+int(probable_outs[1])
+            except:
+                no_games_played = 'no games played'
             probable_pitcher_hits = previous_avg['H'][probable_len]
             probable_pitcher_walks = previous_avg['BB'][probable_len]
             probable_pitcher_runs = previous_avg['R'][probable_len]
@@ -145,7 +148,7 @@ for matchup_section in matchup_sections:
 
     # page = requests.get(url)
     # driver.get(matchup_url)
-    time.sleep(5)
+    time.sleep(2)
     # driver.execute_script("window.scrollTo(0, 1000);")
     
     # matchup_soup = soup(page.content, 'html.parser')    
@@ -236,25 +239,35 @@ for matchup_section in matchup_sections:
     home_hitting_throwhand_url_last10 = hitting_throwhand_url_last10[0]['Runs/9'][1]
     time.sleep(2)
     
+    pitching_last5 = pandas.read_html(pitching_url_last5)
+    away_relievers_last5 = pitching_last5[2]['Runs/9'][0]
+    home_relievers_last5 = pitching_last5[2]['Runs/9'][1]
+    time.sleep(2)
+    hitting_last5 = pandas.read_html(hitting_url_last5)
+    away_hitting_last5 = hitting_last5[0]['Runs/9'][0]
+    home_hitting_last5 = hitting_last5[0]['Runs/9'][1]
+    time.sleep(2)
+    hitting_throwhand_url_last5 = pandas.read_html(hitting_throwhand_url_last5)
+    away_hitting_throwhand_url_last5 = hitting_throwhand_url_last5[0]['Runs/9'][0]
+    home_hitting_throwhand_url_last5 = hitting_throwhand_url_last5[0]['Runs/9'][1]
+    time.sleep(2)
 
+    pitching_overall = pandas.read_html(pitching_url_overall)
+    away_relievers_overall = pitching_overall[2]['Runs/9'][0]
+    home_relievers_overall = pitching_overall[2]['Runs/9'][1]
+    time.sleep(2)
+    hitting_overall = pandas.read_html(hitting_url_overall)
+    away_hitting_overall = hitting_overall[2]['Runs/9'][0]
+    home_hitting_overall = hitting_overall[2]['Runs/9'][1]
+    time.sleep(2)
+    hitting_throwhand_overall = pandas.read_html(hitting_throwhand_url_overall)
+    away_hitting_throwhand_overall = hitting_throwhand_overall[2]['Runs/9'][0]
+    home_hitting_throwhand_overall = hitting_throwhand_overall[2]['Runs/9'][1]
+    time.sleep(2)
 
-    # pitching_last5 = pandas.read_html(pitching_url_last10)
-    # time.sleep(5)
-    # hitting_last5 = pandas.read_html(hitting_url_last10)
-    # time.sleep(5)
-    # hitting_throwhand_url_last5 = pandas.read_html(hitting_throwhand_url_last10)
-    # time.sleep(5)
+    baseball_reference_page = pandas.read_html(baseball_reference)
 
-    # pitching_overall = pandas.read_html(pitching_url_last10)
-    # time.sleep(5)
-    # hitting_overall = pandas.read_html(hitting_url_last10)
-    # time.sleep(5)
-    # hitting_throwhand_url_overall = pandas.read_html(hitting_throwhand_url_last10)
-    # time.sleep(5)
-
-    # baseball_reference_page = pandas.read_html(baseball_reference)
-
-    # relievers_last10 = pitching_url_last10[2]
+    print()
 
     
 # with open("covers.json","w") as jsonFile:
