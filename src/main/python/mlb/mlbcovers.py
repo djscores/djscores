@@ -68,10 +68,7 @@ for matchup_section in matchup_sections:
             probable_ip = previous_avg['IP'][len(previous_avg)-1]
             probable_ip_str = str(probable_ip)
             away_probable_outs = probable_ip_str.split(".")
-            try:
-                away_probable_outs_float = float(probable_outs[0])*3+int(probable_outs[1])
-            except:
-                no_games = 'No games played so far this season'
+            away_probable_outs_float = float(away_probable_outs[0])*3+int(away_probable_outs[1])
             away_probable_pitcher_hits = previous_avg['H'][probable_len]
             away_probable_pitcher_walks = previous_avg['BB'][probable_len]
             away_probable_pitcher_runs = previous_avg['R'][probable_len]
@@ -231,8 +228,12 @@ for matchup_section in matchup_sections:
     home_relievers_last10 = pitching_last10[2]['Runs/9'][1]
     time.sleep(2)
     hitting_last10 = pandas.read_html(hitting_url_last10)
+    away_hitting_last10 = hitting_last10[0]['Runs/9'][0]
+    home_hitting_last10 = hitting_last10[0]['Runs/9'][1]
     time.sleep(2)
     hitting_throwhand_url_last10 = pandas.read_html(hitting_throwhand_url_last10)
+    away_hitting_throwhand_url_last10 = hitting_throwhand_url_last10[0]['Runs/9'][0]
+    home_hitting_throwhand_url_last10 = hitting_throwhand_url_last10[0]['Runs/9'][1]
     time.sleep(2)
     
 
