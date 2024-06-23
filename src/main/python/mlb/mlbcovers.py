@@ -14,7 +14,7 @@ import traceback
 # from mlbespn import todays_games
 
 warnings.filterwarnings("ignore")
-url = 'https://www.covers.com/sports/mlb/matchups?selectedDate=2024-06-22'
+url = 'https://www.covers.com/sports/mlb/matchups?selectedDate=2024-06-23'
 page = requests.get(url)
 soup = BeautifulSoup(page.content, 'html.parser')
 # matchup_pattern = re.compile("mlb-matchup-link")
@@ -94,12 +94,11 @@ try:
                     odds = so_div.find_all('div', {'class':"odds upper-block"})
                     odds_over = odds[0].text.split(' ')
                     odds_over_float = float(odds_over[0][2:])
-                    print(odds_over_float)
-                    previous_avg.SO = previous_avg.SO.astype(int)
-                    so_odds_over = previous_avg.query('SO' > odds_over_float)
-                    print(len(so_odds_over))
+                    so_odds_over = previous_avg.query('SO > ' + str(odds_over_float))
+                    print(str(odds_over_float) + ' ' + str(len(so_odds_over)))
                 except Exception as e:
-                    print(e)
+                    message = e
+                    # print(e)
 
                 away_probable_pitcher_hr = previous_avg['HR'][probable_len]
                 away_probable_pitcher_lastavg = previous_avg['Date'][probable_len]
