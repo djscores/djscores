@@ -52,6 +52,10 @@ try:
         home_probable_name = ''
         away_probable_stats = ''
         home_probable_stats = ''
+        away_probable_odds = ''
+        home_probable_odds = ''
+        away_probable_gameScore = ''
+        home_probable_gameScore = ''
 
         if len(probables) > 0:
             away_probable = probables[0].find('a')
@@ -80,31 +84,86 @@ try:
                         break
                 
                 probable_len = len(previous_avg)-1
-                probable_ip = previous_avg['IP'][len(previous_avg)-1]
-                probable_ip_str = str(probable_ip)
-                away_probable_outs = probable_ip_str.split(".")
-                away_probable_outs_float = float(away_probable_outs[0])*3+int(away_probable_outs[1])
-                away_probable_pitcher_hits = previous_avg['H'][probable_len]
-                away_probable_pitcher_walks = previous_avg['BB'][probable_len]
-                away_probable_pitcher_runs = previous_avg['R'][probable_len]
-                
-                away_probable_pitcher_so = previous_avg['SO'][probable_len]
-                so_div = away_probable_soup.find('section', {'id':"strikeouts-thrown"})
+                away_probable_pitcher_outs = previous_avg['Outs'][probable_len]
+                away_probable_outs_odds = ''
                 try:
-                    odds = so_div.find_all('div', {'class':"odds upper-block"})
-                    odds_over = odds[0].text.split(' ')
-                    odds_over_float = float(odds_over[0][2:])
-                    so_odds_over = previous_avg.query('SO > ' + str(odds_over_float))
-                    print(str(odds_over_float) + ' ' + str(len(so_odds_over)))
+                    outs_div = away_probable_soup.find('section', {'id':"outs-recorded"})
+                    if outs_div:
+                        odds = outs_div.find_all('div', {'class':"odds upper-block"})
+                        odds_over = odds[0].text.split(' ')
+                        odds_over_float = float(odds_over[0][2:])
+                        outs_odds_over = previous_avg.query('Outs > ' + str(odds_over_float))
+                        outs_odds_over = so_odds_over[~so_odds_over['Date'].str.contains('Last')]
+                        away_probable_outs_odds = str(odds_over_float) + ' ' + str(len(outs_odds_over))
                 except Exception as e:
                     message = e
                     # print(e)
 
+                away_probable_pitcher_so = previous_avg['SO'][probable_len]
+                so_div = away_probable_soup.find('section', {'id':"strikeouts-thrown"})
+                away_probable_so_odds = ''
+                try:
+                    if so_div:
+                        odds = so_div.find_all('div', {'class':"odds upper-block"})
+                        odds_over = odds[0].text.split(' ')
+                        odds_over_float = float(odds_over[0][2:])
+                        so_odds_over = previous_avg.query('SO > ' + str(odds_over_float))
+                        so_odds_over = so_odds_over[~so_odds_over['Date'].str.contains('Last')]
+                        away_probable_so_odds = str(odds_over_float) + ' ' + str(len(so_odds_over))
+                except Exception as e:
+                    message = e
+                    # print(e)
+
+                away_probable_pitcher_hits = previous_avg['H'][probable_len]
+                hits_div = away_probable_soup.find('section', {'id':"hits-allowed"})
+                away_probable_hits_odds = ''
+                try:
+                    if hits_div:
+                        hits = hits_div.find_all('div', {'class':"odds upper-block"})
+                        odds_over = hits[0].text.split(' ')
+                        odds_over_float = float(odds_over[0][2:])
+                        hits_odds_over = previous_avg.query('H > ' + str(odds_over_float))
+                        hits_odds_over = hits_odds_over[~hits_odds_over['Date'].str.contains('Last')]
+                        away_probable_hits_odds = str(odds_over_float) + ' ' + str(len(hits_odds_over))
+                except Exception as e:
+                    message = e
+                    # print(e)
+                
+
+                away_probable_pitcher_walks = previous_avg['BB'][probable_len]
+                walks_div = away_probable_soup.find('section', {'id':"walks-allowed"})
+                away_probable_walks_odds = ''
+                try:
+                    if walks_div:
+                        walks = walks_div.find_all('div', {'class':"odds upper-block"})
+                        odds_over = walks[0].text.split(' ')
+                        odds_over_float = float(odds_over[0][2:])
+                        walks_odds_over = previous_avg.query('H > ' + str(odds_over_float))
+                        walks_odds_over = walks_odds_over[~walks_odds_over['Date'].str.contains('Last')]
+                        away_probable_walks_odds = str(odds_over_float) + ' ' + str(len(walks_odds_over))
+                except Exception as e:
+                    message = e
+                
+                away_probable_pitcher_runs = previous_avg['ER'][probable_len]
+                runs_div = away_probable_soup.find('section', {'id':"earned-runs-allowed"})
+                away_probable_runs_odds = ''
+                try:
+                    if runs_div:
+                        runs = runs_div.find_all('div', {'class':"odds upper-block"})
+                        odds_over = runs[0].text.split(' ')
+                        odds_over_float = float(odds_over[0][2:])
+                        runs_odds_over = previous_avg.query('H > ' + str(odds_over_float))
+                        runs_odds_over = runs_odds_over[~runs_odds_over['Date'].str.contains('Last')]
+                        away_probable_runs_odds = str(odds_over_float) + ' ' + str(len(runs_odds_over))
+                except Exception as e:
+                    message = e
+                
                 away_probable_pitcher_hr = previous_avg['HR'][probable_len]
                 away_probable_pitcher_lastavg = previous_avg['Date'][probable_len]
-                away_gameScore = 47.5 + away_probable_pitcher_so + (away_probable_outs_float*1.5) - (away_probable_pitcher_walks*2) - (away_probable_pitcher_hits*2) - (away_probable_pitcher_runs*3) - (away_probable_pitcher_hr * 4)
-                away_probable = str("{0:.1f}".format(away_gameScore))
-                away_probable_stats =  away_probable_pitcher_lastavg + ' outs ' + str(away_probable_outs_float) + ' so ' + str(away_probable_pitcher_so) + ' hits ' +  str(away_probable_pitcher_hits) + ' walks ' + str(away_probable_pitcher_walks) + ' runs ' + str(away_probable_pitcher_runs) + ' hr ' + str(away_probable_pitcher_hr)
+                away_gameScore = 47.5 + away_probable_pitcher_so + (away_probable_pitcher_outs*1.5) - (away_probable_pitcher_walks*2) - (away_probable_pitcher_hits*2) - (away_probable_pitcher_runs*3) - (away_probable_pitcher_hr * 4)
+                away_probable_gameScore = str("{0:.1f}".format(away_gameScore))
+                away_probable_stats =  away_probable_pitcher_lastavg + ' outs ' + str(away_probable_pitcher_outs) + ' so ' + str(away_probable_pitcher_so) + ' hits ' +  str(away_probable_pitcher_hits) + ' walks ' + str(away_probable_pitcher_walks) + ' runs ' + str(away_probable_pitcher_runs) + ' hr ' + str(away_probable_pitcher_hr)
+                away_probable_odds = away_probable_pitcher_lastavg + ' odds - outs ' + away_probable_outs_odds + ' so ' + away_probable_so_odds + ' hits ' + away_probable_hits_odds + ' walks ' + away_probable_walks_odds + ' runs ' + away_probable_runs_odds
             else:
                 print('TBD')
                 # for game in espn_games:
@@ -113,36 +172,104 @@ try:
                 #         print(espn_pitcher_href)
             if home_probable:
                 home_probable_href = home_probable.attrs.get('href')
-                home_probable_page = pandas.read_html(home_probable_href)
+                home_probable_page = requests.get(home_probable_href)
+                home_probable_soup = BeautifulSoup(home_probable_page.content, 'lxml')
+                home_probable_page = pandas.read_html(home_probable_page.text, header=0)
                 
                 if len(home_probable_page) > 2:
-                    previous_avg = home_probable_page[0]
+                    home_previous_avg = home_probable_page[0]
                     for table in home_probable_page:
                         if 'IP' in table.columns:
-                            previous_avg = table
+                            home_previous_avg = table
                             break
 
-                probable_len = len(previous_avg)-1
-                probable_ip = previous_avg['IP'][len(previous_avg)-1]
-                probable_ip_str = str(probable_ip)
-                probable_outs = probable_ip_str.split(".")
+                home_probable_len = len(home_previous_avg)-1
                 try:
-                    probable_outs_float = float(probable_outs[0])*3+int(probable_outs[1])
-                except:
-                    no_games_played = 'no games played'
-                probable_pitcher_hits = previous_avg['H'][probable_len]
-                probable_pitcher_walks = previous_avg['BB'][probable_len]
-                probable_pitcher_runs = previous_avg['R'][probable_len]
-                probable_pitcher_so = previous_avg['SO'][probable_len]
-                probable_pitcher_hr = previous_avg['HR'][probable_len]
+                    home_probable_pitcher_outs = home_previous_avg['Outs'][home_probable_len]
                 
-                if 'Date' in table.columns:
-                    probable_pitcher_lastavg = previous_avg['Date'][probable_len]
-                gameScore = 47.5 + probable_pitcher_so + (probable_outs_float*1.5) - (probable_pitcher_walks*2) - (probable_pitcher_hits*2) - (probable_pitcher_runs*3) - (probable_pitcher_hr * 4)
-                home_probable = str("{0:.1f}".format(gameScore))
-                home_probable_stats = probable_pitcher_lastavg + ' outs ' + str(probable_outs_float) + ' so ' + str(probable_pitcher_so) + ' hits ' +  str(probable_pitcher_hits) + ' walks ' + str(probable_pitcher_walks) + ' runs ' + str(probable_pitcher_runs) + ' hr ' + str(probable_pitcher_hr)
+                    home_probable_outs_odds = ''
+                    try:
+                        outs_div = home_probable_soup.find('section', {'id':"outs-recorded"})
+                        if outs_div:
+                            odds = outs_div.find_all('div', {'class':"odds upper-block"})
+                            odds_over = odds[0].text.split(' ')
+                            odds_over_float = float(odds_over[0][2:])
+                            outs_odds_over = home_previous_avg.query('Outs > ' + str(odds_over_float))
+                            outs_odds_over = so_odds_over[~so_odds_over['Date'].str.contains('Last')]
+                            home_probable_outs_odds = str(odds_over_float) + ' ' + str(len(outs_odds_over))
+                    except Exception as e:
+                        message = e
+                        # print(e)
 
-        
+                    home_probable_pitcher_so = home_previous_avg['SO'][home_probable_len]
+                    so_div = home_probable_soup.find('section', {'id':"strikeouts-thrown"})
+                    home_probable_so_odds = ''
+                    try:
+                        if so_div:
+                            odds = so_div.find_all('div', {'class':"odds upper-block"})
+                            odds_over = odds[0].text.split(' ')
+                            odds_over_float = float(odds_over[0][2:])
+                            so_odds_over = home_previous_avg.query('SO > ' + str(odds_over_float))
+                            so_odds_over = so_odds_over[~so_odds_over['Date'].str.contains('Last')]
+                            home_probable_so_odds = str(odds_over_float) + ' ' + str(len(so_odds_over))
+                    except Exception as e:
+                        message = e
+                        # print(e)
+
+                    home_probable_pitcher_hits = home_previous_avg['H'][home_probable_len]
+                    hits_div = home_probable_soup.find('section', {'id':"hits-allowed"})
+                    home_probable_hits_odds = ''
+                    try:
+                        if hits_div:
+                            hits = hits_div.find_all('div', {'class':"odds upper-block"})
+                            odds_over = hits[0].text.split(' ')
+                            odds_over_float = float(odds_over[0][2:])
+                            hits_odds_over = home_previous_avg.query('H > ' + str(odds_over_float))
+                            hits_odds_over = hits_odds_over[~hits_odds_over['Date'].str.contains('Last')]
+                            home_probable_hits_odds = str(odds_over_float) + ' ' + str(len(hits_odds_over))
+                    except Exception as e:
+                        message = e
+                        # print(e)
+                    
+
+                    home_probable_pitcher_walks = home_previous_avg['BB'][home_probable_len]
+                    walks_div = home_probable_soup.find('section', {'id':"walks-allowed"})
+                    home_probable_walks_odds = ''
+                    try:
+                        if walks_div:
+                            walks = walks_div.find_all('div', {'class':"odds upper-block"})
+                            odds_over = walks[0].text.split(' ')
+                            odds_over_float = float(odds_over[0][2:])
+                            walks_odds_over = home_previous_avg.query('H > ' + str(odds_over_float))
+                            walks_odds_over = walks_odds_over[~walks_odds_over['Date'].str.contains('Last')]
+                            home_probable_walks_odds = str(odds_over_float) + ' ' + str(len(walks_odds_over))
+                    except Exception as e:
+                        message = e
+                    
+                    home_probable_pitcher_runs = home_previous_avg['ER'][home_probable_len]
+                    runs_div = home_probable_soup.find('section', {'id':"earned-runs-allowed"})
+                    home_probable_runs_odds = ''
+                    try:
+                        if runs_div:
+                            runs = runs_div.find_all('div', {'class':"odds upper-block"})
+                            odds_over = runs[0].text.split(' ')
+                            odds_over_float = float(odds_over[0][2:])
+                            runs_odds_over = home_previous_avg.query('H > ' + str(odds_over_float))
+                            runs_odds_over = runs_odds_over[~runs_odds_over['Date'].str.contains('Last')]
+                            home_probable_runs_odds = str(odds_over_float) + ' ' + str(len(runs_odds_over))
+                    except Exception as e:
+                        message = e
+                    
+                    home_probable_pitcher_hr = home_previous_avg['HR'][home_probable_len]
+
+                    if 'Date' in table.columns:
+                        probable_pitcher_lastavg = home_previous_avg['Date'][probable_len]
+                    gameScore = 47.5 + home_probable_pitcher_so + (home_probable_pitcher_outs*1.5) - (home_probable_pitcher_walks*2) - (home_probable_pitcher_hits*2) - (home_probable_pitcher_runs*3) - (home_probable_pitcher_hr * 4)
+                    home_probable_gameScore = str("{0:.1f}".format(gameScore))
+                    home_probable_stats = probable_pitcher_lastavg + ' outs ' + str(home_probable_pitcher_outs) + ' so ' + str(home_probable_pitcher_so) + ' hits ' +  str(home_probable_pitcher_hits) + ' walks ' + str(home_probable_pitcher_walks) + ' runs ' + str(home_probable_pitcher_runs) + ' hr ' + str(home_probable_pitcher_hr)
+                    home_probable_odds = probable_pitcher_lastavg + ' odds - outs ' + home_probable_outs_odds + ' so ' + home_probable_so_odds + ' hits ' + home_probable_hits_odds + ' walks ' + home_probable_walks_odds + ' runs ' + home_probable_runs_odds
+                except Exception as e:
+                    message = e
         headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36',
         "Content-Type": "application/x-www-form-urlencoded"}
@@ -190,7 +317,8 @@ try:
         # print(away_pitcher_last5)
         
         print(away_probable_name)
-        print(away_probable + ' ' + away_probable_stats)
+        print(away_probable_gameScore + ' ' + away_probable_stats)
+        print(away_probable_odds)
         if 'H' in away_pitcher_last5.columns:
             away_last5_len = len(away_pitcher_last5)-1
             away_last5_ip = away_pitcher_last5['IP'][away_last5_len]
@@ -217,7 +345,8 @@ try:
 
         # print(home_pitcher_last5)
         print(home_probable_name)
-        print(home_probable + ' ' + home_probable_stats)
+        print(home_probable_gameScore + ' ' + home_probable_stats)
+        print(home_probable_odds)
         if 'H' in home_pitcher_last5.columns:
             home_last5_len = len(home_pitcher_last5)-1
             home_last5_ip = home_pitcher_last5['IP'][home_last5_len]
