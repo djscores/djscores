@@ -14,7 +14,7 @@ import traceback
 # from mlbespn import todays_games
 
 warnings.filterwarnings("ignore")
-url = 'https://www.covers.com/sports/mlb/matchups?selectedDate=2024-06-23'
+url = 'https://www.covers.com/sports/mlb/matchups?selectedDate=2024-06-24'
 page = requests.get(url)
 soup = BeautifulSoup(page.content, 'html.parser')
 # matchup_pattern = re.compile("mlb-matchup-link")
@@ -93,7 +93,7 @@ try:
                         odds_over = odds[0].text.split(' ')
                         odds_over_float = float(odds_over[0][2:])
                         outs_odds_over = previous_avg.query('Outs > ' + str(odds_over_float))
-                        outs_odds_over = so_odds_over[~so_odds_over['Date'].str.contains('Last')]
+                        outs_odds_over = outs_odds_over[~outs_odds_over['Date'].str.contains('Last')]
                         away_probable_outs_odds = str(odds_over_float) + ' ' + str(len(outs_odds_over))
                 except Exception as e:
                     message = e
@@ -138,7 +138,7 @@ try:
                         walks = walks_div.find_all('div', {'class':"odds upper-block"})
                         odds_over = walks[0].text.split(' ')
                         odds_over_float = float(odds_over[0][2:])
-                        walks_odds_over = previous_avg.query('H > ' + str(odds_over_float))
+                        walks_odds_over = previous_avg.query('BB > ' + str(odds_over_float))
                         walks_odds_over = walks_odds_over[~walks_odds_over['Date'].str.contains('Last')]
                         away_probable_walks_odds = str(odds_over_float) + ' ' + str(len(walks_odds_over))
                 except Exception as e:
@@ -152,7 +152,7 @@ try:
                         runs = runs_div.find_all('div', {'class':"odds upper-block"})
                         odds_over = runs[0].text.split(' ')
                         odds_over_float = float(odds_over[0][2:])
-                        runs_odds_over = previous_avg.query('H > ' + str(odds_over_float))
+                        runs_odds_over = previous_avg.query('ER > ' + str(odds_over_float))
                         runs_odds_over = runs_odds_over[~runs_odds_over['Date'].str.contains('Last')]
                         away_probable_runs_odds = str(odds_over_float) + ' ' + str(len(runs_odds_over))
                 except Exception as e:
@@ -195,7 +195,7 @@ try:
                             odds_over = odds[0].text.split(' ')
                             odds_over_float = float(odds_over[0][2:])
                             outs_odds_over = home_previous_avg.query('Outs > ' + str(odds_over_float))
-                            outs_odds_over = so_odds_over[~so_odds_over['Date'].str.contains('Last')]
+                            outs_odds_over = outs_odds_over[~outs_odds_over['Date'].str.contains('Last')]
                             home_probable_outs_odds = str(odds_over_float) + ' ' + str(len(outs_odds_over))
                     except Exception as e:
                         message = e
@@ -231,7 +231,6 @@ try:
                         message = e
                         # print(e)
                     
-
                     home_probable_pitcher_walks = home_previous_avg['BB'][home_probable_len]
                     walks_div = home_probable_soup.find('section', {'id':"walks-allowed"})
                     home_probable_walks_odds = ''
@@ -240,7 +239,7 @@ try:
                             walks = walks_div.find_all('div', {'class':"odds upper-block"})
                             odds_over = walks[0].text.split(' ')
                             odds_over_float = float(odds_over[0][2:])
-                            walks_odds_over = home_previous_avg.query('H > ' + str(odds_over_float))
+                            walks_odds_over = home_previous_avg.query('BB > ' + str(odds_over_float))
                             walks_odds_over = walks_odds_over[~walks_odds_over['Date'].str.contains('Last')]
                             home_probable_walks_odds = str(odds_over_float) + ' ' + str(len(walks_odds_over))
                     except Exception as e:
@@ -254,7 +253,7 @@ try:
                             runs = runs_div.find_all('div', {'class':"odds upper-block"})
                             odds_over = runs[0].text.split(' ')
                             odds_over_float = float(odds_over[0][2:])
-                            runs_odds_over = home_previous_avg.query('H > ' + str(odds_over_float))
+                            runs_odds_over = home_previous_avg.query('ER > ' + str(odds_over_float))
                             runs_odds_over = runs_odds_over[~runs_odds_over['Date'].str.contains('Last')]
                             home_probable_runs_odds = str(odds_over_float) + ' ' + str(len(runs_odds_over))
                     except Exception as e:
@@ -263,7 +262,7 @@ try:
                     home_probable_pitcher_hr = home_previous_avg['HR'][home_probable_len]
 
                     if 'Date' in table.columns:
-                        probable_pitcher_lastavg = home_previous_avg['Date'][probable_len]
+                        probable_pitcher_lastavg = home_previous_avg['Date'][home_probable_len]
                     gameScore = 47.5 + home_probable_pitcher_so + (home_probable_pitcher_outs*1.5) - (home_probable_pitcher_walks*2) - (home_probable_pitcher_hits*2) - (home_probable_pitcher_runs*3) - (home_probable_pitcher_hr * 4)
                     home_probable_gameScore = str("{0:.1f}".format(gameScore))
                     home_probable_stats = probable_pitcher_lastavg + ' outs ' + str(home_probable_pitcher_outs) + ' so ' + str(home_probable_pitcher_so) + ' hits ' +  str(home_probable_pitcher_hits) + ' walks ' + str(home_probable_pitcher_walks) + ' runs ' + str(home_probable_pitcher_runs) + ' hr ' + str(home_probable_pitcher_hr)
@@ -377,43 +376,44 @@ try:
         hitting_url_overall = 'https://www.covers.com/'+href+'/stats-analysis/hitting/overall'
         hitting_throwhand_url_overall = 'https://www.covers.com/'+href+'/stats-analysis/hittingvsstarterthrowhand/overall'
         
-        # pitching_last10 = pandas.read_html(pitching_url_last10)
-        # away_relievers_last10 = pitching_last10[2]['Runs/9'][0]
-        # home_relievers_last10 = pitching_last10[2]['Runs/9'][1]
-        # time.sleep(2)
-        # hitting_last10 = pandas.read_html(hitting_url_last10)
-        # away_hitting_last10 = hitting_last10[0]['Runs/9'][0]
-        # home_hitting_last10 = hitting_last10[0]['Runs/9'][1]
-        # time.sleep(2)
-        # hitting_throwhand_url_last10 = pandas.read_html(hitting_throwhand_url_last10)
-        # away_hitting_throwhand_url_last10 = hitting_throwhand_url_last10[0]['Runs/9'][0]
-        # home_hitting_throwhand_url_last10 = hitting_throwhand_url_last10[0]['Runs/9'][1]
-        # time.sleep(2)
+        pitching_last10 = pandas.read_html(pitching_url_last10)
+        away_relievers_last10 = pitching_last10[2]['Runs/9'][0]
+        home_relievers_last10 = pitching_last10[2]['Runs/9'][1]
+        time.sleep(2)
+        hitting_last10 = pandas.read_html(hitting_url_last10)
+        away_hitting_last10 = hitting_last10[0]['Runs/9'][0]
+        home_hitting_last10 = hitting_last10[0]['Runs/9'][1]
+        time.sleep(2)
+        hitting_throwhand_url_last10 = pandas.read_html(hitting_throwhand_url_last10)
+        away_hitting_throwhand_url_last10 = hitting_throwhand_url_last10[0]['Runs/9'][0]
+        home_hitting_throwhand_url_last10 = hitting_throwhand_url_last10[0]['Runs/9'][1]
+        time.sleep(2)
         
-        # pitching_last5 = pandas.read_html(pitching_url_last5)
-        # away_relievers_last5 = pitching_last5[2]['Runs/9'][0]
-        # home_relievers_last5 = pitching_last5[2]['Runs/9'][1]
-        # time.sleep(2)
-        # hitting_last5 = pandas.read_html(hitting_url_last5)
-        # away_hitting_last5 = hitting_last5[0]['Runs/9'][0]
-        # home_hitting_last5 = hitting_last5[0]['Runs/9'][1]
-        # time.sleep(2)
-        # hitting_throwhand_url_last5 = pandas.read_html(hitting_throwhand_url_last5)
-        # away_hitting_throwhand_url_last5 = hitting_throwhand_url_last5[0]['Runs/9'][0]
-        # home_hitting_throwhand_url_last5 = hitting_throwhand_url_last5[0]['Runs/9'][1]
-        # time.sleep(2)
+        pitching_last5 = pandas.read_html(pitching_url_last5)
+        away_relievers_last5 = pitching_last5[2]['Runs/9'][0]
+        home_relievers_last5 = pitching_last5[2]['Runs/9'][1]
+        time.sleep(2)
+        hitting_last5 = pandas.read_html(hitting_url_last5)
+        away_hitting_last5 = hitting_last5[0]['Runs/9'][0]
+        home_hitting_last5 = hitting_last5[0]['Runs/9'][1]
+        time.sleep(2)
+        hitting_throwhand_url_last5 = pandas.read_html(hitting_throwhand_url_last5)
+        away_hitting_throwhand_url_last5 = hitting_throwhand_url_last5[0]['Runs/9'][0]
+        home_hitting_throwhand_url_last5 = hitting_throwhand_url_last5[0]['Runs/9'][1]
+        time.sleep(2)
 
-        # pitching_overall = pandas.read_html(pitching_url_overall)
-        # away_relievers_overall = pitching_overall[2]['Runs/9'][0]
-        # home_relievers_overall = pitching_overall[2]['Runs/9'][1]
-        # time.sleep(2)
-        # hitting_overall = pandas.read_html(hitting_url_overall)
-        # away_hitting_overall = hitting_overall[0]['Runs/9'][0]
-        # home_hitting_overall = hitting_overall[0]['Runs/9'][1]
-        # time.sleep(2)
-        # hitting_throwhand_overall = pandas.read_html(hitting_throwhand_url_overall)
-        # away_hitting_throwhand_overall = hitting_throwhand_overall[0]['Runs/9'][0]
-        # home_hitting_throwhand_overall = hitting_throwhand_overall[0]['Runs/9'][1]
+        pitching_overall = pandas.read_html(pitching_url_overall)
+        away_relievers_overall = pitching_overall[2]['Runs/9'][0]
+        home_relievers_overall = pitching_overall[2]['Runs/9'][1]
+        time.sleep(2)
+        hitting_overall = pandas.read_html(hitting_url_overall)
+        away_hitting_overall = hitting_overall[0]['Runs/9'][0]
+        home_hitting_overall = hitting_overall[0]['Runs/9'][1]
+        time.sleep(2)
+        hitting_throwhand_overall = pandas.read_html(hitting_throwhand_url_overall)
+        away_hitting_throwhand_overall = hitting_throwhand_overall[0]['Runs/9'][0]
+        home_hitting_throwhand_overall = hitting_throwhand_overall[0]['Runs/9'][1]
+        
         # time.sleep(2)
 
         print()
