@@ -14,7 +14,7 @@ import traceback
 # from mlbespn import todays_games
 
 warnings.filterwarnings("ignore")
-url = 'https://www.covers.com/sports/mlb/matchups?selectedDate=2024-06-24'
+url = 'https://www.covers.com/sports/mlb/matchups?selectedDate=2024-07-08'
 page = requests.get(url)
 soup = BeautifulSoup(page.content, 'html.parser')
 # matchup_pattern = re.compile("mlb-matchup-link")
@@ -28,9 +28,13 @@ pitchersdf = pandas.DataFrame(columns=['away_name','away_last5_score','away_last
                                        'home_last10_outs','home_last10_so','home_last10_hits','home_last10_walks','home_last10_runs','home_last10_hr'])
 try:
     for matchup_section in matchup_sections:
-        teams = matchup_section.find('div',{'class': 'cmg_matchup_header_team_names'})
-        team_list = teams.text.split(" at ")
-        print(teams.text.strip())
+        # teams = matchup_section.find('div',{'class': 'cmg_matchup_header_team_names'})
+        # team_list = teams.text.split(" at ")
+        # print(teams.text.strip())
+        teams = matchup_section.select("a[href*=teams]")
+        away_team = teams[0]['href'].split("/")[6].replace("-"," ")
+        home_team = teams[1]['href'].split("/")[6].replace("-"," ")
+        print(away_team + ' at ' + home_team)
         probables = matchup_section.find_all('div',{'class': 'cmg_l_col cmg_l_span_6 cmg_team_starting_pitcher'})
         
         # https://www.covers.com/sport/player-props/matchup/300239?propEvent=MLB_GAME_PLAYER_PITCHER_STRIKEOUTS&countryCode=US&stateProv=Ohio&isLeagueVersion=False
@@ -56,7 +60,17 @@ try:
         home_probable_odds = ''
         away_probable_gameScore = ''
         home_probable_gameScore = ''
-
+        away_probable_outs_odds = ''
+        away_probable_so_odds = ''
+        away_probable_hits_odds = ''
+        away_probable_walks_odds = ''
+        away_probable_runs_odds = ''
+        home_probable_outs_odds = ''
+        home_probable_so_odds = ''
+        home_probable_hits_odds = ''
+        home_probable_walks_odds = ''
+        home_probable_runs_odds = ''
+                
         if len(probables) > 0:
             away_probable = probables[0].find('a')
             home_probable = probables[1].find('a')
@@ -85,7 +99,6 @@ try:
                 
                 probable_len = len(previous_avg)-1
                 away_probable_pitcher_outs = previous_avg['Outs'][probable_len]
-                away_probable_outs_odds = ''
                 try:
                     outs_div = away_probable_soup.find('section', {'id':"outs-recorded"})
                     if outs_div:
@@ -101,7 +114,6 @@ try:
 
                 away_probable_pitcher_so = previous_avg['SO'][probable_len]
                 so_div = away_probable_soup.find('section', {'id':"strikeouts-thrown"})
-                away_probable_so_odds = ''
                 try:
                     if so_div:
                         odds = so_div.find_all('div', {'class':"odds upper-block"})
@@ -116,7 +128,7 @@ try:
 
                 away_probable_pitcher_hits = previous_avg['H'][probable_len]
                 hits_div = away_probable_soup.find('section', {'id':"hits-allowed"})
-                away_probable_hits_odds = ''
+                
                 try:
                     if hits_div:
                         hits = hits_div.find_all('div', {'class':"odds upper-block"})
@@ -132,7 +144,7 @@ try:
 
                 away_probable_pitcher_walks = previous_avg['BB'][probable_len]
                 walks_div = away_probable_soup.find('section', {'id':"walks-allowed"})
-                away_probable_walks_odds = ''
+                
                 try:
                     if walks_div:
                         walks = walks_div.find_all('div', {'class':"odds upper-block"})
@@ -146,7 +158,7 @@ try:
                 
                 away_probable_pitcher_runs = previous_avg['ER'][probable_len]
                 runs_div = away_probable_soup.find('section', {'id':"earned-runs-allowed"})
-                away_probable_runs_odds = ''
+                
                 try:
                     if runs_div:
                         runs = runs_div.find_all('div', {'class':"odds upper-block"})
@@ -187,7 +199,6 @@ try:
                 try:
                     home_probable_pitcher_outs = home_previous_avg['Outs'][home_probable_len]
                 
-                    home_probable_outs_odds = ''
                     try:
                         outs_div = home_probable_soup.find('section', {'id':"outs-recorded"})
                         if outs_div:
@@ -203,7 +214,7 @@ try:
 
                     home_probable_pitcher_so = home_previous_avg['SO'][home_probable_len]
                     so_div = home_probable_soup.find('section', {'id':"strikeouts-thrown"})
-                    home_probable_so_odds = ''
+                    
                     try:
                         if so_div:
                             odds = so_div.find_all('div', {'class':"odds upper-block"})
@@ -218,7 +229,7 @@ try:
 
                     home_probable_pitcher_hits = home_previous_avg['H'][home_probable_len]
                     hits_div = home_probable_soup.find('section', {'id':"hits-allowed"})
-                    home_probable_hits_odds = ''
+                    
                     try:
                         if hits_div:
                             hits = hits_div.find_all('div', {'class':"odds upper-block"})
@@ -233,7 +244,7 @@ try:
                     
                     home_probable_pitcher_walks = home_previous_avg['BB'][home_probable_len]
                     walks_div = home_probable_soup.find('section', {'id':"walks-allowed"})
-                    home_probable_walks_odds = ''
+                    
                     try:
                         if walks_div:
                             walks = walks_div.find_all('div', {'class':"odds upper-block"})
@@ -247,7 +258,7 @@ try:
                     
                     home_probable_pitcher_runs = home_previous_avg['ER'][home_probable_len]
                     runs_div = home_probable_soup.find('section', {'id':"earned-runs-allowed"})
-                    home_probable_runs_odds = ''
+                    
                     try:
                         if runs_div:
                             runs = runs_div.find_all('div', {'class':"odds upper-block"})
@@ -287,21 +298,12 @@ try:
         
         # matchup_BeautifulSoup = BeautifulSoup(page.content, 'html.parser')    
         
-        baseball_reference = 'https://www.baseball-reference.com/leagues/MLB-standings.shtml#expanded_standings_overall'
-        # baseball_reference_page = requests.get(baseball_reference)
-        # baseball_reference = BeautifulSoup(baseball_reference_page.content, 'html.parser')
-        # standings_table = baseball_reference.find('table', {'id':"expanded_standings_overall"})
+        # baseball_reference = 'https://www.baseball-reference.com/leagues/MLB-standings.shtml#expanded_standings_overall'
+        # baseball_ref_previews = 'https://www.baseball-reference.com/previews/'
 
-        # driver = webdriver.Chrome()
-        # driver.get(baseball_reference)
-        # driver.execute_script("window.scrollTo(0, 1000);")
-        # time.sleep(5)
-        # html = driver.page_source
-        # html = html.replace('<!--','')
-        # html = html.replace('-->','')
-        # baseball_reference_page = BeautifulSoup(html, 'html.parser')
-        # baseball_reference_page_standings = baseball_reference_page.find('button', {'tip':"Get a link directly to this table on this page"})
-        # driver.quit()
+        # baseball_reference_page = requests.get(baseball_ref_previews)
+        # baseball_reference = BeautifulSoup(baseball_reference_page.content, 'html.parser')
+       
         
         matchup = pandas.read_html(matchup_url)
         

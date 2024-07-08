@@ -9,6 +9,7 @@ import os
 
 def todays_games():
     today = date.today().strftime('%Y%m%d') 
+    # today = '20240702'
     url = 'https://www.espn.com/mlb/schedule/_/date/'+today
     driver = webdriver.Chrome()
     driver.get(url)
@@ -39,7 +40,8 @@ def todays_games():
             print(pitchers[0])
             away_pitcher_last5 = scrape_pitcher(away_pitcher_href)
             time.sleep(5)
-            print(pitchers[1])
+            if len(pitchers) > 0:
+                print(pitchers[1])
             home_pitcher_last5 = scrape_pitcher(home_pitcher_href)
             time.sleep(5)
             print()
